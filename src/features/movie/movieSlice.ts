@@ -5,11 +5,13 @@ import { searchMovies } from './movieAPI';
 export interface MovieState {
   value: any;
   status: 'idle' | 'loading' | 'failed';
+  history: string[];
 }
 
 const initialState: MovieState = {
   value: {},
   status: 'idle',
+  history: []
 };
 
 // The function below is called a thunk and allows us to perform async logic. It
@@ -30,7 +32,7 @@ export const movieSlice = createSlice({
   name: 'counter',
   initialState,
   // The `reducers` field lets us define reducers and generate associated actions
-  reducers: {
+  reducers: { 
      
   },
   // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -41,7 +43,8 @@ export const movieSlice = createSlice({
         state.status = 'loading';
       })
       .addCase(searchMovieAsync.fulfilled, (state, action) => {
-        state.status = 'idle';
+        state.status = 'idle'; 
+        state.history.push(action.meta.arg!) 
         state.value = action.payload;
       })
       .addCase(searchMovieAsync.rejected, (state) => {
@@ -50,7 +53,6 @@ export const movieSlice = createSlice({
   },
 });
  
-
 // The function below is called a selector and allows us to select a value from
 // the state. Selectors can also be defined inline where they're used instead of
 // in the slice file. For example: `useSelector((state: RootState) => state.counter.value)`
@@ -58,8 +60,9 @@ export const selectMovies = (state: RootState) => {
   return state.movie.value.results;
 }
 
-// We can also write thunks by hand, which may contain both sync and async logic.
-// Here's an example of conditionally dispatching actions based on current state.
- 
+export const selectHistory = (state: RootState) => { 
+  return state.movie.history;
+}
 
+ 
 export default movieSlice.reducer;
