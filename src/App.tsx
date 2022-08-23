@@ -1,22 +1,22 @@
 import React, { useEffect } from 'react'; 
 import './App.css';
-import SearchAppBar from './components/SearchAppBar';
-import { useAppDispatch } from './app/hooks';
-import { searchMovieAsync } from './features/movie/movieSlice';
-import Movies from './features/movie/Movies';
 
-const App = () =>{
-  const dispatch = useAppDispatch();
-  useEffect(()=>{
-    dispatch(searchMovieAsync())
-  },[])
-  const searchAction = (query: string) => {
-    dispatch(searchMovieAsync(query))
-  }
+import Movies from './features/movie/Movies';
+import {
+  BrowserRouter,
+  Switch,
+  Route
+} from 'react-router-dom'; 
+import Details from './features/details/Details';
+const App = () =>{ 
   return (
     <div className="App">
-        <SearchAppBar onSearchMovie = {searchAction} title='Movie Gallery'/>
-        <Movies />
+        <BrowserRouter>
+          <Switch>
+            <Route exact path='/' component={Movies} />
+            <Route path='/details/:id' component={Details}/>
+          </Switch>
+        </BrowserRouter>
     </div>
   );
 }
