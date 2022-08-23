@@ -3,12 +3,13 @@ import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
-import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-
+import Autocomplete from '@mui/material/Autocomplete/Autocomplete';
+import TextField from '@mui/material/TextField/TextField';
+import { useAppSelector } from '../app/hooks';
+import { selectHistory } from '../features/movie/movieSlice';
+ 
 interface IProps {
   onSearchMovie: (query: string) => void;
   title: string;
@@ -38,27 +39,20 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
-    padding: theme.spacing(1, 1, 1, 0),
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '100%',
-    [theme.breakpoints.up('sm')]: {
-      width: '12ch',
-      '&:focus': {
-        width: '20ch',
-      },
-    },
-  },
-}));
-
-
-
+  
 const SearchAppBar = (props: IProps) => {
-
+  const history = useAppSelector(selectHistory); 
+  const [historyItems, setHistoryItems]= React.useState(history);
+  
+  React.useEffect(()=>{
+    const removeDup: React.SetStateAction<string[]>  = [];
+    history.map((item: string)=>{
+      if (item !== undefined && !removeDup.includes(item)){
+        removeDup.push(item);
+      }
+    }) 
+    setHistoryItems(removeDup);
+  },[history])
   const handleKeyDown = (e: any) => {
     if (e.key === 'Enter') {
       props.onSearchMovie(e.target.value)
@@ -69,33 +63,32 @@ const SearchAppBar = (props: IProps) => {
     <Box sx={{ flexGrow: 1 }}>
       <AppBar position="static">
         <Toolbar>
-          <Search>
+        <Autocomplete
+        freeSolo
+        id="free-solo-8-demo"
+        fullWidth
+        disableClearable
+        options={historyItems}
+        renderInput={(params) => (
+          
+           <Search>
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
-            <StyledInputBase
+            <TextField style={{color: 'white'}}
+              {...params}
               placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              onKeyDown={e => handleKeyDown(e)}
-            />
-          </Search>
-          {/* <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
-          >
-            {props.title}
-          </Typography>
+              InputProps={{
+                ...params.InputProps,
+                type: 'search',
+                style: {color: 'white', paddingLeft: '40px'}
+              }}
+              onKeyDown={(e: any) => handleKeyDown(e)}
+            /> 
+          </Search> 
+        )}
+      />
+           
           
         </Toolbar>
       </AppBar>

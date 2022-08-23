@@ -18,7 +18,7 @@ const Movies = () => {
                 <div>
                     <Grid container spacing={{ xs: 2, md: 3 }} columns={{ xs: 3, sm: 8, md: 12 }}>
                         {movies.map((movie: any, index: number) => (
-                        <Grid xs={3} sm={4} md={3} key={index}> 
+                        <Grid item={true} xs={3} sm={4} md={3} key={index}> 
                            <MultiActionAreaCard imageUrl={API_IMG+movie.poster_path} {...movie}/>
                         </Grid>
                     ))}
